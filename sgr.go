@@ -1,8 +1,6 @@
 package aec
 
-import (
-	"fmt"
-)
+import "strconv"
 
 // RGB3Bit is a 3bit RGB color.
 type RGB3Bit uint8
@@ -11,7 +9,7 @@ type RGB3Bit uint8
 type RGB8Bit uint8
 
 func newSGR(n uint) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"%dm", n))
+	return newAnsi(esc + itoaUint(n) + "m")
 }
 
 // NewRGB3Bit create a RGB3Bit from given RGB.
@@ -26,32 +24,38 @@ func NewRGB8Bit(r, g, b uint8) RGB8Bit {
 
 // Color3BitF set the foreground color of text.
 func Color3BitF(c RGB3Bit) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"%dm", c+30))
+	return newAnsi(esc + itoaUint(uint(c+30)) + "m")
 }
 
 // Color3BitB set the background color of text.
 func Color3BitB(c RGB3Bit) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"%dm", c+40))
+	return newAnsi(esc + itoaUint(uint(c+40)) + "m")
 }
 
 // Color8BitF set the foreground color of text.
 func Color8BitF(c RGB8Bit) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"38;5;%dm", c))
+	return newAnsi(esc + "38;5;" + itoaUint(uint(c)) + "m")
 }
 
 // Color8BitB set the background color of text.
 func Color8BitB(c RGB8Bit) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"48;5;%dm", c))
+	return newAnsi(esc + "48;5;" + itoaUint(uint(c)) + "m")
 }
 
 // FullColorF set the foreground color of text.
 func FullColorF(r, g, b uint8) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"38;2;%d;%d;%dm", r, g, b))
+	return newAnsi(esc + "38;2;" +
+		strconv.Itoa(int(r)) + ";" +
+		strconv.Itoa(int(g)) + ";" +
+		strconv.Itoa(int(b)) + "m")
 }
 
 // FullColorB set the foreground color of text.
 func FullColorB(r, g, b uint8) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"48;2;%d;%d;%dm", r, g, b))
+	return newAnsi(esc + "48;2;" +
+		strconv.Itoa(int(r)) + ";" +
+		strconv.Itoa(int(g)) + ";" +
+		strconv.Itoa(int(b)) + "m")
 }
 
 // Style

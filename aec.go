@@ -1,6 +1,6 @@
 package aec
 
-import "fmt"
+import "strconv"
 
 // EraseMode is listed in a variable EraseModes.
 type EraseMode uint
@@ -34,12 +34,17 @@ var (
 	Report ANSI
 )
 
+// itoaUint converts a uint to a string.
+func itoaUint(n uint) string {
+	return strconv.FormatUint(uint64(n), 10)
+}
+
 // Up moves up the cursor.
 func Up(n uint) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dA", n))
+	return newAnsi(esc + itoaUint(n) + "A")
 }
 
 // Down moves down the cursor.
@@ -47,7 +52,7 @@ func Down(n uint) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dB", n))
+	return newAnsi(esc + itoaUint(n) + "B")
 }
 
 // Right moves right the cursor.
@@ -55,7 +60,7 @@ func Right(n uint) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dC", n))
+	return newAnsi(esc + itoaUint(n) + "C")
 }
 
 // Left moves left the cursor.
@@ -63,7 +68,7 @@ func Left(n uint) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dD", n))
+	return newAnsi(esc + itoaUint(n) + "D")
 }
 
 // NextLine moves down the cursor to head of a line.
@@ -71,7 +76,7 @@ func NextLine(n uint) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dE", n))
+	return newAnsi(esc + itoaUint(n) + "E")
 }
 
 // PreviousLine moves up the cursor to head of a line.
@@ -79,27 +84,27 @@ func PreviousLine(n uint) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dF", n))
+	return newAnsi(esc + itoaUint(n) + "F")
 }
 
 // Column set the cursor position to a given column.
 func Column(col uint) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"%dG", col))
+	return newAnsi(esc + itoaUint(col) + "G")
 }
 
 // Position set the cursor position to a given absolute position.
 func Position(row, col uint) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"%d;%dH", row, col))
+	return newAnsi(esc + itoaUint(row) + ";" + itoaUint(col) + "H")
 }
 
 // EraseDisplay erases display by given EraseMode.
 func EraseDisplay(m EraseMode) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"%dJ", m))
+	return newAnsi(esc + strconv.Itoa(int(m)) + "J")
 }
 
 // EraseLine erases lines by given EraseMode.
 func EraseLine(m EraseMode) ANSI {
-	return newAnsi(fmt.Sprintf(esc+"%dK", m))
+	return newAnsi(esc + strconv.Itoa(int(m)) + "K")
 }
 
 // ScrollUp scrolls up the page.
@@ -107,7 +112,7 @@ func ScrollUp(n int) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dS", n))
+	return newAnsi(esc + strconv.Itoa(n) + "S")
 }
 
 // ScrollDown scrolls down the page.
@@ -115,7 +120,7 @@ func ScrollDown(n int) ANSI {
 	if n == 0 {
 		return empty
 	}
-	return newAnsi(fmt.Sprintf(esc+"%dT", n))
+	return newAnsi(esc + strconv.Itoa(n) + "T")
 }
 
 func init() {
