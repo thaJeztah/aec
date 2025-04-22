@@ -1,59 +1,50 @@
 package aec
 
 import (
-	"fmt"
 	"strings"
 )
 
 const esc = "\x1b["
 
 // Reset resets SGR effect.
-const Reset string = "\x1b[0m"
+const Reset = "\x1b[0m"
 
-var empty = newAnsi("")
+// ANSI represents an ANSI escape code.
+type ANSI string
 
-// ANSI represents ANSI escape code.
-type ANSI interface {
-	fmt.Stringer
+var empty = ANSI("")
 
-	// With adapts given ANSIs.
-	With(...ANSI) ANSI
-
-	// Apply wraps given string in ANSI.
-	Apply(string) string
+// With returns a new ANSI sequence composed of this and the provided ANSI codes.
+func (a ANSI) With(codes ...ANSI) ANSI {
+	return concat(append([]ANSI{a}, codes...))
 }
 
-type ansiImpl string
-
-func newAnsi(s string) *ansiImpl {
-	r := ansiImpl(s)
-	return &r
+// Apply wraps the given string with the ANSI sequence and a reset code.
+func (a ANSI) Apply(s string) string {
+	return string(a) + s + Reset
 }
 
-func (a *ansiImpl) With(ansi ...ANSI) ANSI {
-	return concat(append([]ANSI{a}, ansi...))
+// String returns the ANSI escape code as a string.
+func (a ANSI) String() string {
+	return string(a)
 }
 
-func (a *ansiImpl) Apply(s string) string {
-	return a.String() + s + Reset
-}
-
-func (a *ansiImpl) String() string {
-	return string(*a)
-}
-
-// Apply wraps given string in ANSIs.
-func Apply(s string, ansi ...ANSI) string {
-	if len(ansi) == 0 {
+// Apply wraps the given string with all provided ANSI sequences.
+func Apply(s string, codes ...ANSI) string {
+	if len(codes) == 0 {
 		return s
 	}
-	return concat(ansi).Apply(s)
+	return concat(codes).Apply(s)
 }
 
-func concat(ansi []ANSI) ANSI {
-	strs := make([]string, 0, len(ansi))
-	for _, p := range ansi {
-		strs = append(strs, p.String())
+// concat combines multiple ANSI codes into a single ANSI sequence.
+func concat(codes []ANSI) ANSI {
+	if len(codes) == 1 {
+		return codes[0]
 	}
-	return newAnsi(strings.Join(strs, ""))
+	var b strings.Builder
+	for _, c := range codes {
+		b.WriteString(string(c))
+	}
+	return ANSI(b.String())
 }

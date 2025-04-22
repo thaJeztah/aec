@@ -8,10 +8,6 @@ type RGB3Bit uint8
 // RGB8Bit is a 8bit RGB color.
 type RGB8Bit uint8
 
-func newSGR(n uint) ANSI {
-	return newAnsi(esc + itoaUint(n) + "m")
-}
-
 // NewRGB3Bit create a RGB3Bit from given RGB.
 func NewRGB3Bit(r, g, b uint8) RGB3Bit {
 	return RGB3Bit((r >> 7) | ((g >> 6) & 0x2) | ((b >> 5) & 0x4))
@@ -24,27 +20,27 @@ func NewRGB8Bit(r, g, b uint8) RGB8Bit {
 
 // Color3BitF set the foreground color of text.
 func Color3BitF(c RGB3Bit) ANSI {
-	return newAnsi(esc + itoaUint(uint(c+30)) + "m")
+	return ANSI(esc + itoaUint(uint(c+30)) + "m")
 }
 
 // Color3BitB set the background color of text.
 func Color3BitB(c RGB3Bit) ANSI {
-	return newAnsi(esc + itoaUint(uint(c+40)) + "m")
+	return ANSI(esc + itoaUint(uint(c+40)) + "m")
 }
 
 // Color8BitF set the foreground color of text.
 func Color8BitF(c RGB8Bit) ANSI {
-	return newAnsi(esc + "38;5;" + itoaUint(uint(c)) + "m")
+	return ANSI(esc + "38;5;" + itoaUint(uint(c)) + "m")
 }
 
 // Color8BitB set the background color of text.
 func Color8BitB(c RGB8Bit) ANSI {
-	return newAnsi(esc + "48;5;" + itoaUint(uint(c)) + "m")
+	return ANSI(esc + "48;5;" + itoaUint(uint(c)) + "m")
 }
 
 // FullColorF set the foreground color of text.
 func FullColorF(r, g, b uint8) ANSI {
-	return newAnsi(esc + "38;2;" +
+	return ANSI(esc + "38;2;" +
 		strconv.Itoa(int(r)) + ";" +
 		strconv.Itoa(int(g)) + ";" +
 		strconv.Itoa(int(b)) + "m")
@@ -52,155 +48,103 @@ func FullColorF(r, g, b uint8) ANSI {
 
 // FullColorB set the foreground color of text.
 func FullColorB(r, g, b uint8) ANSI {
-	return newAnsi(esc + "48;2;" +
+	return ANSI(esc + "48;2;" +
 		strconv.Itoa(int(r)) + ";" +
 		strconv.Itoa(int(g)) + ";" +
 		strconv.Itoa(int(b)) + "m")
 }
 
 // Style
-var (
+const (
 	// Bold set the text style to bold or increased intensity.
-	Bold ANSI
+	Bold ANSI = "\x1b[1m"
 
 	// Faint set the text style to faint.
-	Faint ANSI
+	Faint ANSI = "\x1b[2m"
 
 	// Italic set the text style to italic.
-	Italic ANSI
+	Italic ANSI = "\x1b[3m"
 
 	// Underline set the text style to underline.
-	Underline ANSI
+	Underline ANSI = "\x1b[4m"
 
 	// BlinkSlow set the text style to slow blink.
-	BlinkSlow ANSI
+	BlinkSlow ANSI = "\x1b[5m"
 
 	// BlinkRapid set the text style to rapid blink.
-	BlinkRapid ANSI
+	BlinkRapid ANSI = "\x1b[6m"
 
 	// Inverse swap the foreground color and background color.
-	Inverse ANSI
+	Inverse ANSI = "\x1b[7m"
 
 	// Conceal set the text style to conceal.
-	Conceal ANSI
+	Conceal ANSI = "\x1b[8m"
 
 	// CrossOut set the text style to crossed out.
-	CrossOut ANSI
+	CrossOut ANSI = "\x1b[9m"
 
 	// Frame set the text style to framed.
-	Frame ANSI
+	Frame ANSI = "\x1b[51m"
 
 	// Encircle set the text style to encircled.
-	Encircle ANSI
+	Encircle ANSI = "\x1b[52m"
 
 	// Overline set the text style to overlined.
-	Overline ANSI
+	Overline ANSI = "\x1b[53m"
 )
 
 // Foreground color of text.
-var (
+const (
 	// DefaultF is the default color of foreground.
-	DefaultF ANSI
+	DefaultF ANSI = "\x1b[39m"
 
 	// Normal color
-	BlackF   ANSI
-	RedF     ANSI
-	GreenF   ANSI
-	YellowF  ANSI
-	BlueF    ANSI
-	MagentaF ANSI
-	CyanF    ANSI
-	WhiteF   ANSI
+
+	BlackF   ANSI = "\x1b[30m"
+	RedF     ANSI = "\x1b[31m"
+	GreenF   ANSI = "\x1b[32m"
+	YellowF  ANSI = "\x1b[33m"
+	BlueF    ANSI = "\x1b[34m"
+	MagentaF ANSI = "\x1b[35m"
+	CyanF    ANSI = "\x1b[36m"
+	WhiteF   ANSI = "\x1b[37m"
 
 	// Light color
-	LightBlackF   ANSI
-	LightRedF     ANSI
-	LightGreenF   ANSI
-	LightYellowF  ANSI
-	LightBlueF    ANSI
-	LightMagentaF ANSI
-	LightCyanF    ANSI
-	LightWhiteF   ANSI
+
+	LightBlackF   ANSI = "\x1b[90m"
+	LightRedF     ANSI = "\x1b[91m"
+	LightGreenF   ANSI = "\x1b[92m"
+	LightYellowF  ANSI = "\x1b[93m"
+	LightBlueF    ANSI = "\x1b[94m"
+	LightMagentaF ANSI = "\x1b[95m"
+	LightCyanF    ANSI = "\x1b[96m"
+	LightWhiteF   ANSI = "\x1b[97m"
 )
 
 // Background color of text.
-var (
+const (
 	// DefaultB is the default color of background.
-	DefaultB ANSI
+	DefaultB ANSI = "\x1b[49m"
 
 	// Normal color
-	BlackB   ANSI
-	RedB     ANSI
-	GreenB   ANSI
-	YellowB  ANSI
-	BlueB    ANSI
-	MagentaB ANSI
-	CyanB    ANSI
-	WhiteB   ANSI
+
+	BlackB   ANSI = "\x1b[40m"
+	RedB     ANSI = "\x1b[41m"
+	GreenB   ANSI = "\x1b[42m"
+	YellowB  ANSI = "\x1b[43m"
+	BlueB    ANSI = "\x1b[44m"
+	MagentaB ANSI = "\x1b[45m"
+	CyanB    ANSI = "\x1b[46m"
+	WhiteB   ANSI = "\x1b[47m"
 
 	// Light color
-	LightBlackB   ANSI
-	LightRedB     ANSI
-	LightGreenB   ANSI
-	LightYellowB  ANSI
-	LightBlueB    ANSI
-	LightMagentaB ANSI
-	LightCyanB    ANSI
-	LightWhiteB   ANSI
+
+	LightBlackB   ANSI = "\x1b[100m"
+	LightRedB     ANSI = "\x1b[101m"
+	LightGreenB   ANSI = "\x1b[102m"
+	LightYellowB  ANSI = "\x1b[103m"
+	LightBlueB    ANSI = "\x1b[104m"
+	LightMagentaB ANSI = "\x1b[105m"
+	LightCyanB    ANSI = "\x1b[106m"
+	LightWhiteB   ANSI = "\x1b[107m"
 )
-
-func init() {
-	Bold = newSGR(1)
-	Faint = newSGR(2)
-	Italic = newSGR(3)
-	Underline = newSGR(4)
-	BlinkSlow = newSGR(5)
-	BlinkRapid = newSGR(6)
-	Inverse = newSGR(7)
-	Conceal = newSGR(8)
-	CrossOut = newSGR(9)
-
-	BlackF = newSGR(30)
-	RedF = newSGR(31)
-	GreenF = newSGR(32)
-	YellowF = newSGR(33)
-	BlueF = newSGR(34)
-	MagentaF = newSGR(35)
-	CyanF = newSGR(36)
-	WhiteF = newSGR(37)
-
-	DefaultF = newSGR(39)
-
-	BlackB = newSGR(40)
-	RedB = newSGR(41)
-	GreenB = newSGR(42)
-	YellowB = newSGR(43)
-	BlueB = newSGR(44)
-	MagentaB = newSGR(45)
-	CyanB = newSGR(46)
-	WhiteB = newSGR(47)
-
-	DefaultB = newSGR(49)
-
-	Frame = newSGR(51)
-	Encircle = newSGR(52)
-	Overline = newSGR(53)
-
-	LightBlackF = newSGR(90)
-	LightRedF = newSGR(91)
-	LightGreenF = newSGR(92)
-	LightYellowF = newSGR(93)
-	LightBlueF = newSGR(94)
-	LightMagentaF = newSGR(95)
-	LightCyanF = newSGR(96)
-	LightWhiteF = newSGR(97)
-
-	LightBlackB = newSGR(100)
-	LightRedB = newSGR(101)
-	LightGreenB = newSGR(102)
-	LightYellowB = newSGR(103)
-	LightBlueB = newSGR(104)
-	LightMagentaB = newSGR(105)
-	LightCyanB = newSGR(106)
-	LightWhiteB = newSGR(107)
-}
